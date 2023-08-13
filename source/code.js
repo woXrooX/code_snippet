@@ -1,6 +1,6 @@
 "use strict";
 
-import JavaScript from "./source/languages/JavaScript.js";
+import JavaScript from "./languages/JavaScript.js";
 
 export default class Code extends HTMLElement{
   //// Native Form Behaviour
