@@ -32,7 +32,7 @@ export default class Code extends HTMLElement{
         style.textContent = `
           pre{
             background-color: hsla(230, 13%, 9%, 1);
-            width: 100%;
+            width: auto;
             height: auto;
             border-radius: 5px;
             box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.5);
@@ -61,11 +61,10 @@ export default class Code extends HTMLElement{
       case "JavaScript":
         this.codeElement.innerHTML = JavaScript.handle(this.RAW);
         break;
-      case "HTML":
-        this.codeElement.innerHTML = this.RAW;
-        break;
+
       default:
-        console.log("No match");
+        this.codeElement.innerText = this.RAW;
+        console.warn("X-Code: No match");
     }
   }
 
