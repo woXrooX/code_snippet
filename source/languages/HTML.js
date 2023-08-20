@@ -81,10 +81,13 @@ export default class HTML{
       // '<'
       if(HTML.#code.substring(HTML.#current, HTML.#current+4) === "&lt;"){
         HTML.#handleElement();
+        continue;
       }
 
-      HTML.#tokens.push({type: 'text', value: HTML.#code[HTML.#current]});
-      HTML.#current++;
+      if(HTML.#code[HTML.#current]){
+        HTML.#tokens.push({type: 'text', value: HTML.#code[HTML.#current]});
+        HTML.#current++;
+      }
     }
   }
 
