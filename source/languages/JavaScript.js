@@ -87,7 +87,7 @@ export default class JavaScript{
         continue;
       }
 
-      // Handle numbers
+      // Numbers
       if(/[0-9]/.test(char)){
         let number = char;
 
@@ -99,7 +99,7 @@ export default class JavaScript{
         continue;
       }
 
-      // Handle strings
+      // String
       if(char === '"' || char === "'"){
         let string = `"`;
         let quote = char;
