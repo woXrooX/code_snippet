@@ -1,12 +1,19 @@
 export default class HTML{
   static #tokens = [];
   static #current = 0;
-  static #code;
+  static #code = "";
 
   static handle(code){
+    HTML.#reset();
     HTML.#code = code;
     HTML.#tokenize();
     return HTML.#renderHighlightedCode();
+  }
+
+  static #reset(){
+    HTML.#tokens = [];
+    HTML.#current = 0;
+    HTML.#code = "";
   }
 
   static #renderHighlightedCode(){
