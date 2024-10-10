@@ -3,7 +3,7 @@
 import JavaScript from "./languages/JavaScript.js";
 import HTML from "./languages/HTML.js";
 
-export default class Code_snippet extends HTMLElement{
+export default class code_snippet extends HTMLElement{
 	//// Native Form Behaviour
 	// Identify the element as a form-associated custom element
 	static formAssociated = true;
@@ -11,7 +11,7 @@ export default class Code_snippet extends HTMLElement{
 	static #template = document.createElement("template");
 
 	static {
-		Code_snippet.#template.innerHTML = `
+		code_snippet.#template.innerHTML = `
 			<div>
 				<header>
 					<span></span>
@@ -133,7 +133,7 @@ export default class Code_snippet extends HTMLElement{
 		}
 
 		// Clone And Append Template
-		this.shadow.appendChild(Code_snippet.#template.content.cloneNode(true));
+		this.shadow.appendChild(code_snippet.#template.content.cloneNode(true));
 
 		InsertCode:{
 			this.codeElement = this.shadow.querySelector("div > code");
@@ -166,7 +166,7 @@ export default class Code_snippet extends HTMLElement{
 	}
 };
 
-window.customElements.define('code-snippet', Code_snippet);
+window.customElements.define('code-snippet', code_snippet);
 
-// Make Code_snippet Usable W/O Importing It
-window.Code_snippet = Code_snippet;
+// Make code_snippet Usable W/O Importing It
+window.code_snippet = code_snippet;
