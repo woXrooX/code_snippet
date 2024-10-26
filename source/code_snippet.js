@@ -44,6 +44,7 @@ export default class code_snippet extends HTMLElement{
 			style.textContent = `
 				:host(code-snippet){
 					display: block;
+					max-width: 100%;
 				}
 
 				div{
