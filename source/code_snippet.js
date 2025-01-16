@@ -14,7 +14,8 @@ export default class code_snippet extends HTMLElement{
 		code_snippet.#template.innerHTML = `
 			<div>
 				<header>
-					<span></span>
+					<span class="lang"></span>
+					<span class="title"></span>
 					<button></button>
 				</header>
 				<code></code>
@@ -39,6 +40,9 @@ export default class code_snippet extends HTMLElement{
 		// If language is not defined, then exit
 		if(!!this.hasAttribute("lang") === false) this.lang = "RAW";
 
+		// If title is not defined, then exit
+		if(!!this.hasAttribute("title") === false) this.title = '';
+
 		CSS: {
 			const style = document.createElement('style');
 			style.textContent = `
@@ -60,9 +64,9 @@ export default class code_snippet extends HTMLElement{
 
 						padding: 5px 10px;
 
-						display: flex;
-						flex-direction: row;
-						justify-content: space-between;
+						display: grid;
+						grid-template-columns: 1fr 1fr 1fr;
+						justify-items: center;
 						align-items: center;
 
 						& > button{
@@ -77,16 +81,26 @@ export default class code_snippet extends HTMLElement{
 							width: 24px;
 							height: 24px;
 							border: none;
+
+							justify-self: end;
 						}
 
 						& > span{
 							color: white;
 							font-size: 10px;
 							font-family: Sans;
+						}
 
-							&::after{
-								content: "${this.lang}";
-							}
+						& > span.lang{
+							justify-self: flex-start;
+						}
+							
+						& > span.lang::after{
+							content: "${this.lang}";
+						}
+
+						& > span.title::after{
+							content: "${this.title}";
 						}
 					}
 
