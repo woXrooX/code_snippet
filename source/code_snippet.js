@@ -1,27 +1,7 @@
-"use strict";
-
 import JavaScript from "./languages/JavaScript.js";
 import HTML from "./languages/HTML.js";
 
 export default class code_snippet extends HTMLElement{
-	//// Native Form Behaviour
-	// Identify the element as a form-associated custom element
-	static formAssociated = true;
-
-	static #template = document.createElement("template");
-
-	static {
-		code_snippet.#template.innerHTML = `
-			<div>
-				<header>
-					<span></span>
-					<button></button>
-				</header>
-				<code></code>
-			</div>
-		`;
-	}
-
 	constructor(){
 		super();
 
@@ -36,12 +16,14 @@ export default class code_snippet extends HTMLElement{
 		// Remove last new lines
 		this.RAW = this.RAW.substring(0, this.RAW.length-4);
 
-		// If language is not defined, then exit
+		// If language is not defined, then set it to "RAW"
 		if(!!this.hasAttribute("lang") === false) this.lang = "RAW";
 
-		CSS: {
-			const style = document.createElement('style');
-			style.textContent = `
+		// If title is not defined, then set it to ''
+		if(!!this.hasAttribute("title") === false) this.title = '';
+
+		this.shadow.innerHTML = `
+			<style>
 				:host(code-snippet){
 					display: block;
 					max-width: 100%;
@@ -60,10 +42,24 @@ export default class code_snippet extends HTMLElement{
 
 						padding: 5px 10px;
 
-						display: flex;
-						flex-direction: row;
-						justify-content: space-between;
+						display: grid;
+						grid-template-columns: 1fr 1fr 1fr;
+						justify-items: center;
 						align-items: center;
+
+						& > span{
+							color: white;
+							font-size: 0.5rem;
+							font-family: Sans;
+
+							&.lang{
+								justify-self: flex-start;
+							}
+
+							&.title{
+								font-size: 0.7rem;
+							}
+						}
 
 						& > button{
 							cursor: pointer;
@@ -77,16 +73,8 @@ export default class code_snippet extends HTMLElement{
 							width: 24px;
 							height: 24px;
 							border: none;
-						}
 
-						& > span{
-							color: white;
-							font-size: 10px;
-							font-family: Sans;
-
-							&::after{
-								content: "${this.lang}";
-							}
+							justify-self: end;
 						}
 					}
 
@@ -129,39 +117,43 @@ export default class code_snippet extends HTMLElement{
 						}
 					}
 				}
-			`;
-			this.shadow.appendChild(style);
-		}
+			</style>
+			<div>
+				<header>
+					<span class="lang">${this.lang}</span>
+					<span class="title">${this.title}</span>
+					<button></button>
+				</header>
+				<code></code>
+			</div>
+		`;
 
-		// Clone And Append Template
-		this.shadow.appendChild(code_snippet.#template.content.cloneNode(true));
-
-		InsertCode:{
-			this.codeElement = this.shadow.querySelector("div > code");
+		insert_code: {
+			this.code_element = this.shadow.querySelector("div > code");
 
 			switch(this.lang){
 				case "JavaScript":
-					this.codeElement.innerHTML = JavaScript.handle(this.RAW);
+					this.code_element.innerHTML = JavaScript.handle(this.RAW);
 					break;
 
 				case "HTML":
-					this.codeElement.innerHTML = HTML.handle(this.RAW);
+					this.code_element.innerHTML = HTML.handle(this.RAW);
 					break;
 
 				default:
-					this.codeElement.innerText = this.RAW;
+					this.code_element.innerText = this.RAW;
 					console.warn("Code-Snippet: Not supported language!");
 			}
 		}
 
-		Copy: {
-			this.copyButton = this.shadow.querySelector("div > header > button");
-			this.copyButton.onclick = ()=>{
-				navigator.clipboard.writeText(this.codeElement.innerText);
+		copy: {
+			this.copy_button = this.shadow.querySelector("div > header > button");
+			this.copy_button.onclick = ()=>{
+				navigator.clipboard.writeText(this.code_element.innerText);
 
-				this.copyButton.style = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' enable-background='new 0 0 24 24' height='24px' viewBox='0 0 24 24' width='24px' fill='%2300820a'%3E%3Cg%3E%3Crect fill='none' height='24' width='24'/%3E%3C/g%3E%3Cg%3E%3Cg%3E%3Cpath d='M5,5h2v3h10V5h2v5h2V5c0-1.1-0.9-2-2-2h-4.18C14.4,1.84,13.3,1,12,1S9.6,1.84,9.18,3H5C3.9,3,3,3.9,3,5v14 c0,1.1,0.9,2,2,2h6v-2H5V5z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z'/%3E%3Cpolygon points='21,11.5 15.51,17 12.5,14 11,15.5 15.51,20 22.5,13'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`;
+				this.copy_button.style = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' enable-background='new 0 0 24 24' height='24px' viewBox='0 0 24 24' width='24px' fill='%2300820a'%3E%3Cg%3E%3Crect fill='none' height='24' width='24'/%3E%3C/g%3E%3Cg%3E%3Cg%3E%3Cpath d='M5,5h2v3h10V5h2v5h2V5c0-1.1-0.9-2-2-2h-4.18C14.4,1.84,13.3,1,12,1S9.6,1.84,9.18,3H5C3.9,3,3,3.9,3,5v14 c0,1.1,0.9,2,2,2h6v-2H5V5z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z'/%3E%3Cpolygon points='21,11.5 15.51,17 12.5,14 11,15.5 15.51,20 22.5,13'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`;
 
-				setTimeout(()=>{this.copyButton.removeAttribute("style");}, 5000);
+				setTimeout(()=>{this.copy_button.removeAttribute("style");}, 5000);
 			}
 		}
 	}
