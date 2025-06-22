@@ -1,13 +1,12 @@
-import JavaScript from "./languages/JavaScript.js";
 import HTML from "./languages/HTML.js";
+import JavaScript from "./languages/JavaScript.js";
+import RAW from "./languages/RAW.js";
 
 export default class code_snippet extends HTMLElement{
 	constructor(){
 		super();
 
 		this.shadow = this.attachShadow({mode: 'closed'});
-
-		this.RAW = this.innerHTML;
 
 		this.#clean_up();
 		this.#set_up();
@@ -16,16 +15,18 @@ export default class code_snippet extends HTMLElement{
 	}
 
 	#clean_up = () => {
+		this.RAW = this.innerHTML;
+
+		this.attribute_language_value = "RAW";
+		if(this.hasAttribute("language") === true) this.attribute_language_value = this.getAttribute("language");
+
+		this.attribute_title_value = '';
+		if(this.hasAttribute("title") === true) this.attribute_title_value = this.getAttribute("title");
+
 		this.shadow.replaceChildren();
 	};
 
 	#set_up = () => {
-		this.language = "RAW";
-		if(this.hasAttribute("language") === true) this.language = this.getAttribute("language");
-
-		this.title = '';
-		if(this.hasAttribute("title") === true) this.title = this.getAttribute("title");
-
 		this.shadow.innerHTML = `
 			<style>
 				:host(code-snippet){
@@ -124,8 +125,8 @@ export default class code_snippet extends HTMLElement{
 			</style>
 			<div>
 				<header>
-					<span class="language">${this.language}</span>
-					<span class="title">${this.title}</span>
+					<span class="language">${this.attribute_language_value}</span>
+					<span class="title">${this.attribute_title_value}</span>
 					<button></button>
 				</header>
 				<code></code>
@@ -147,7 +148,7 @@ export default class code_snippet extends HTMLElement{
 	};
 
 	#init_processing = () => {
-		switch(this.language){
+		switch(this.attribute_language_value){
 			case "JavaScript":
 				this.code_element.innerHTML = JavaScript.handle(this.RAW);
 				break;
@@ -157,12 +158,12 @@ export default class code_snippet extends HTMLElement{
 				break;
 
 			case "RAW":
-				this.code_element.innerText = this.RAW;
+				this.code_element.innerText = RAW.handle(this.RAW);
 				break;
 
 			default:
-				this.code_element.innerText = this.RAW;
-				console.warn(`Code-Snippet: Not supported language: ${this.language}`);
+				this.code_element.innerText = RAW.handle(this.RAW);
+				console.warn(`Code-Snippet: Not supported language: ${this.attribute_language_value}`);
 		}
 	};
 };

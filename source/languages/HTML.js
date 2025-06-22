@@ -1,7 +1,7 @@
 export default class HTML{
+	static #code = '';
 	static #tokens = [];
 	static #current	= 0;
-	static #code = "";
 
 	static handle(code){
 		HTML.#code = code;

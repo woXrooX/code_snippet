@@ -1,9 +1,26 @@
 export default class JavaScript{
+	static #code = '';
 	static #tokens = null;
 
 	static handle(code){
-		JavaScript.#tokenize(code);
+		JavaScript.#code = code;
+
+		JavaScript.#strip_blank_edges();
+		JavaScript.#tokenize(JavaScript.#code);
 		return JavaScript.#render_highlighted_code();
+	}
+
+	// Split into lines, drop empty ones at top & bottom, re-join
+	static #strip_blank_edges(){
+		const lines = JavaScript.#code.split(/\r?\n/);
+
+		 // top
+		while(lines.length && lines[0].trim() === '')	lines.shift();
+
+		// bottom
+		while(lines.length && lines.at(-1).trim() === '')	lines.pop();
+
+		JavaScript.#code = lines.join('\n');
 	}
 
 	static #tokenize(code){
