@@ -7,20 +7,24 @@ export default class code_snippet extends HTMLElement{
 
 		this.shadow = this.attachShadow({mode: 'closed'});
 
-		////// RAW data
 		this.RAW = this.innerHTML;
 
-		// Remove 1st new line
-		this.RAW = this.RAW.substring(1, this.RAW.length);
+		this.#clean_up();
+		this.#set_up();
+		this.#build_copy_button_HTML();
+		this.#init_processing();
+	}
 
-		// Remove last new lines
-		this.RAW = this.RAW.substring(0, this.RAW.length-4);
+	#clean_up = () => {
+		this.shadow.replaceChildren();
+	};
 
-		// If language is not defined, then set it to "RAW"
-		if(!!this.hasAttribute("lang") === false) this.lang = "RAW";
+	#set_up = () => {
+		this.language = "RAW";
+		if(this.hasAttribute("language") === true) this.language = this.getAttribute("language");
 
-		// If title is not defined, then set it to ''
-		if(!!this.hasAttribute("title") === false) this.title = '';
+		this.title = '';
+		if(this.hasAttribute("title") === true) this.title = this.getAttribute("title");
 
 		this.shadow.innerHTML = `
 			<style>
@@ -52,7 +56,7 @@ export default class code_snippet extends HTMLElement{
 							font-size: 0.5rem;
 							font-family: Sans;
 
-							&.lang{
+							&.language{
 								justify-self: flex-start;
 							}
 
@@ -120,7 +124,7 @@ export default class code_snippet extends HTMLElement{
 			</style>
 			<div>
 				<header>
-					<span class="lang">${this.lang}</span>
+					<span class="language">${this.language}</span>
 					<span class="title">${this.title}</span>
 					<button></button>
 				</header>
@@ -128,38 +132,39 @@ export default class code_snippet extends HTMLElement{
 			</div>
 		`;
 
-		insert_code: {
-			this.code_element = this.shadow.querySelector("div > code");
+		this.code_element = this.shadow.querySelector("div > code");
+	};
 
-			switch(this.lang){
-				case "JavaScript":
-					this.code_element.innerHTML = JavaScript.handle(this.RAW);
-					break;
+	#build_copy_button_HTML = () => {
+		const copy_button = this.shadow.querySelector("div > header > button");
+		copy_button.onclick = ()=>{
+			navigator.clipboard.writeText(this.code_element.innerText);
 
-				case "HTML":
-					this.code_element.innerHTML = HTML.handle(this.RAW);
-					break;
+			copy_button.style = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' enable-background='new 0 0 24 24' height='24px' viewBox='0 0 24 24' width='24px' fill='%2300820a'%3E%3Cg%3E%3Crect fill='none' height='24' width='24'/%3E%3C/g%3E%3Cg%3E%3Cg%3E%3Cpath d='M5,5h2v3h10V5h2v5h2V5c0-1.1-0.9-2-2-2h-4.18C14.4,1.84,13.3,1,12,1S9.6,1.84,9.18,3H5C3.9,3,3,3.9,3,5v14 c0,1.1,0.9,2,2,2h6v-2H5V5z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z'/%3E%3Cpolygon points='21,11.5 15.51,17 12.5,14 11,15.5 15.51,20 22.5,13'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`;
 
-				default:
-					this.code_element.innerText = this.RAW;
-					console.warn("Code-Snippet: Not supported language!");
-			}
+			setTimeout(()=>{copy_button.removeAttribute("style");}, 5000);
 		}
+	};
 
-		copy: {
-			this.copy_button = this.shadow.querySelector("div > header > button");
-			this.copy_button.onclick = ()=>{
-				navigator.clipboard.writeText(this.code_element.innerText);
+	#init_processing = () => {
+		switch(this.language){
+			case "JavaScript":
+				this.code_element.innerHTML = JavaScript.handle(this.RAW);
+				break;
 
-				this.copy_button.style = `background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' enable-background='new 0 0 24 24' height='24px' viewBox='0 0 24 24' width='24px' fill='%2300820a'%3E%3Cg%3E%3Crect fill='none' height='24' width='24'/%3E%3C/g%3E%3Cg%3E%3Cg%3E%3Cpath d='M5,5h2v3h10V5h2v5h2V5c0-1.1-0.9-2-2-2h-4.18C14.4,1.84,13.3,1,12,1S9.6,1.84,9.18,3H5C3.9,3,3,3.9,3,5v14 c0,1.1,0.9,2,2,2h6v-2H5V5z M12,3c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,3,12,3z'/%3E%3Cpolygon points='21,11.5 15.51,17 12.5,14 11,15.5 15.51,20 22.5,13'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");`;
+			case "HTML":
+				this.code_element.innerHTML = HTML.handle(this.RAW);
+				break;
 
-				setTimeout(()=>{this.copy_button.removeAttribute("style");}, 5000);
-			}
+			case "RAW":
+				this.code_element.innerText = this.RAW;
+				break;
+
+			default:
+				this.code_element.innerText = this.RAW;
+				console.warn(`Code-Snippet: Not supported language: ${this.language}`);
 		}
-	}
+	};
 };
 
 window.customElements.define('code-snippet', code_snippet);
-
-// Make code_snippet Usable W/O Importing It
-window.code_snippet = code_snippet;
