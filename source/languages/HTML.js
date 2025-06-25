@@ -3,13 +3,12 @@ export default class HTML{
 	static #tokens = [];
 	static #current	= 0;
 
+	// Expects escaped HTML
 	static handle(code){
 		HTML.#code = code;
 
 		HTML.#reset();
-		HTML.#remove_script_wrapper();
 		HTML.#strip_blank_edges();
-		HTML.#escape_HTML();
 		HTML.#tokenize();
 		return HTML.#render_highlighted_code();
 	}
@@ -17,26 +16,6 @@ export default class HTML{
 	static #reset(){
 		HTML.#tokens = [];
 		HTML.#current = 0;
-	}
-
-	static #remove_script_wrapper(){
-		if(!HTML.#code.includes('<script')) return;
-
-		// First "<script"
-		const open_start = HTML.#code.indexOf('<script');
-
-		if(open_start !== -1){
-			const open_end = HTML.#code.indexOf('>', open_start);
-
-			// keep after '>'
-			if(open_end !== -1) HTML.#code = HTML.#code.slice(open_end + 1);
-		}
-
-		// Last "</script>"
-		const close_start = HTML.#code.lastIndexOf('</script>');
-
-		// keep before "</script>"
-		if(close_start !== -1) HTML.#code = HTML.#code.slice(0, close_start);
 	}
 
 	// Split into lines, drop empty ones at top & bottom, re-join
@@ -98,13 +77,6 @@ export default class HTML{
 		}
 
 		return out;
-	}
-
-	static #escape_HTML(){
-		HTML.#code = HTML.#code
-			.replaceAll('&', '&amp;')
-			.replaceAll('<', '&lt;')
-			.replaceAll('>', '&gt;');
 	}
 
 	static #tokenize(){
