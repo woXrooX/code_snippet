@@ -2,6 +2,5 @@ This repository is no longer maintained. Development has been moved to woXrooX/x
 
 # code_snippet
 #### Display colored code snippets!
-More info here: https://www.woXrooX.com/developer/tools/code_snippet
+More info here: https://www.woXrooX.com/developer/tools/XE/documentation/Code
 
-##### version: v0.7.0
